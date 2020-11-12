@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+## Generated from go build -buildmode=c-shared
+main.h
+
+## Python temp stuff
+__pycache__
+*~
