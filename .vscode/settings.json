@@ -2,9 +2,11 @@
     "cSpell.words": [
         "CFUNCTYPE",
         "CMPFUNC",
+        "Nanos",
         "cdll",
         "ctypes",
         "ggtest",
+        "myfunc",
         "struct"
     ]
 }

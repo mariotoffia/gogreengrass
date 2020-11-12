@@ -1,8 +1,12 @@
 package main
 
-// cSpell:disable
+/*
+#include <stdlib.h>
+*/
+import "C"
+
 import (
-	"C"
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -11,12 +15,9 @@ import (
 
 	"os"
 
-	"github.com/aws/aws-lambda-go/lambda/messages"
-)
-import (
-	"context"
-
 	"github.com/aws/aws-lambda-go/lambda"
+
+	"github.com/aws/aws-lambda-go/lambda/messages"
 )
 
 const (
@@ -37,14 +38,14 @@ type ggContext struct {
 // GGEnvironment is a set of well known GreenGrass
 // environment parameters.
 type GGEnvironment struct {
-	AuthToken                  string
-	FunctionArn                string
-	EncodingType               string
-	ShadowFunctionArn          string
-	RouterFunctionArn          string
-	GGCMaxInterfaceVersion     string
-	SecretesManagerFunctionArn string
-	GGDeamonPort               string
+	AuthToken                  string `env:"AWS_CONTAINER_AUTHORIZATION_TOKEN"`
+	FunctionArn                string `env:"MY_FUNCTION_ARN"`
+	EncodingType               string `env:"ENCODING_TYPE"`
+	ShadowFunctionArn          string `env:"SHADOW_FUNCTION_ARN"`
+	RouterFunctionArn          string `env:"ROUTER_FUNCTION_ARN"`
+	GGCMaxInterfaceVersion     string `env:"GGC_MAX_INTERFACE_VERSION"`
+	SecretesManagerFunctionArn string `env:"SECRETS_MANAGER_FUNCTION_ARN"`
+	GGDeamonPort               string `env:"GG_DAEMON_PORT"`
 }
 
 // GetGGEnvironment fetches a new instance of `GetGGEnvironment` where it has
@@ -85,7 +86,7 @@ func Register(handler interface{}) {
 }
 
 //export invokeJSON
-func invokeJSON(context string, payload string) {
+func invokeJSON(context string, payload string) *C.char {
 	mtx.Lock()
 	defer mtx.Unlock()
 
@@ -97,11 +98,23 @@ func invokeJSON(context string, payload string) {
 
 	var resp messages.InvokeResponse
 	if err := function.Invoke(req, &resp); err != nil {
-		fmt.Printf("%s", err.Error())
-	} else {
-		data, _ := json.Marshal(&resp)
-		fmt.Printf("%s", string(data))
+
+		return C.CString(fmt.Sprintf(
+			`{"errorMessage": "%s", "errorType": "%s"}`, err.Error(), "invoke",
+		))
+
 	}
+
+	if resp.Error != nil {
+
+		return C.CString(fmt.Sprintf(
+			`{"errorMessage": "%s", "errorType": "%s"}`, resp.Error.Message, resp.Error.Type,
+		))
+
+	}
+
+	payload = string(resp.Payload)
+	return C.CString(fmt.Sprintf(`{"Payload": %s}`, payload))
 }
 
 //export setup
@@ -114,9 +127,14 @@ func setup() {
 		Hello string `json:"hello"`
 	}
 
-	Register(func(c context.Context, data MyEvent) (string, error) {
+	type MyResponse struct {
+		Age   int    `json:"age"`
+		Topic string `json:"topic"`
+	}
+
+	Register(func(c context.Context, data MyEvent) (MyResponse, error) {
 		fmt.Printf("data: '%v'", data)
-		return "hello world", nil
+		return MyResponse{Age: 19, Topic: "feed/myfunc"}, nil
 	})
 
 }
