@@ -1,7 +1,7 @@
 all: run
 
 build: 
-	@go build -o main.so -buildmode=c-shared main.go
+	@go build -o main.so -buildmode=c-shared main.go glue.go
 
 run: build
 	@python3 -m pycode
