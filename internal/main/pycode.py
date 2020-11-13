@@ -4,8 +4,11 @@ from contextmock import _Context
 
 # define class GoString to map:
 # C type struct { const char *p; GoInt n; }
+
+
 class GoString(Structure):
     _fields_ = [("p", c_char_p), ("n", c_longlong)]
+
 
 lib = cdll.LoadLibrary("./main.so")
 lib.invokeJSON.restype = c_char_p
@@ -13,9 +16,10 @@ lib.invokeJSON.restype = c_char_p
 # Main code for lambda
 lib.setup()
 
-def invokeJSON(context: _Context, 
-    event: any, 
-    deadlineMS: str = '300000') -> str:
+
+def invokeJSON(context: _Context,
+               event: any,
+               deadlineMS: str = '300000') -> str:
 
     cDump = json.dumps({
         'aws_request_id': context.aws_request_id,
@@ -33,7 +37,7 @@ def invokeJSON(context: _Context,
         }
     }).encode("utf-8")
 
-    eDump = json.dumps(event).encode("utf-8")    
+    eDump = json.dumps(event).encode("utf-8")
     cg = GoString(cDump, len(cDump))
     pg = GoString(eDump, len(eDump))
 
@@ -41,9 +45,16 @@ def invokeJSON(context: _Context,
     return r.decode("utf-8")
 
 
+def function_handler(event, context):
+    result = invokeJSON(context, event)
+    print("result: " + result)
 
 
-c = _Context('arn:aws:lambda:eu-central-1:033549287452:function:ggtest:7','99994f79-2e36-4eb2-6584-b533cb3bc491')
-result = invokeJSON(c, { "data": 19, "hello": "world" })
+c = _Context(
+             'arn:aws:lambda:eu-central-1:033549287452:function:ggtest:7',
+             '99994f79-2e36-4eb2-6584-b533cb3bc491'
+             )
+             
+e = {"data": 44, "hello": "world"}
 
-print("result: " + result)
+function_handler(e, c)

@@ -6,6 +6,8 @@
         "cdll",
         "ctypes",
         "ggtest",
+        "gogreengrass",
+        "mariotoffia",
         "myfunc",
         "struct"
     ]
