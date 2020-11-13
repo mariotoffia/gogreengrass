@@ -1,12 +1,14 @@
 from ctypes import *
 import json
-import greengrasssdk
 
+# you need to copy sdk to folder greengrasssdk
+import greengrasssdk
 
 class GoString(Structure):
     _fields_ = [("p", c_char_p), ("n", c_longlong)]
 
-
+# Load your library that you've built with 
+# go build -o main.so -buildmode=c-shared main.go init.go
 lib = cdll.LoadLibrary("./main.so")
 lib.invokeJSON.restype = c_char_p
 
@@ -16,13 +18,19 @@ lib.setup()
 # Creating a greengrass core sdk client
 client = greengrasssdk.client("iot-data")
 
+# The actual function that you need to bind the lambda entry point to
+def function_handler(event, context):
+    result = invokeJSON(context, event)
+    return result
 
+
+# publish may be called from go lambda to publish data
 def publish(topic: str, queueFullPolicy: str, payload: str):
     client.publish(topic=topic,
                    queueFullPolicy=queueFullPolicy,
                    payload=payload)
 
-
+# This is invoked by the python lambda function_handler
 def invokeJSON(context: any,
                event: any,
                deadlineMS: str = '300000') -> str:
@@ -50,8 +58,3 @@ def invokeJSON(context: any,
 
     r = lib.invokeJSON(goContext, goEvent)
     return r.decode("utf-8")
-
-
-def function_handler(event, context):
-    result = invokeJSON(context, event)
-    return result

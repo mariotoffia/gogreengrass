@@ -79,6 +79,22 @@ func Register(handler interface{}) {
 	function = lambda.NewFunction(lambda.NewHandler(handler))
 }
 
+// QueueFullPolicy specifies what to do when queue is full while
+// publishing data to queue
+type QueueFullPolicy string
+
+const (
+	// QueueFullPolicyAllOrException - TODO:
+	QueueFullPolicyAllOrException QueueFullPolicy = "AllOrException"
+	// QueueFullPolicyBestEffort - TODO:
+	QueueFullPolicyBestEffort QueueFullPolicy = "BestEffort"
+)
+
+// Publish will publish data onto topic.
+func Publish(topic, policy QueueFullPolicy, data string) {
+	// TODO: execute python code. (need to provide with a callback!)
+}
+
 // InvokeJSON invokes the registered handle
 func InvokeJSON(context string, payload string) string {
 	mtx.Lock()

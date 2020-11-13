@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+var invokeJSONFunc = []byte(`func invokeJSON(context string, payload string) *C.char {
+	return C.CString(sdk.InvokeJSON(context, payload))
+}`)
+
+var setupFunc = []byte(`func setup() {
+}`)
+
 func main() {
 	fmt.Println("Generating embedded resources")
 
@@ -24,7 +31,16 @@ func main() {
 	gen.Write([]byte("package main\n\n"))
 	gen.Write([]byte("var mainPy = []byte(`"))
 	gen.Write(content)
+	gen.Write([]byte("`)\n\n"))
+
+	gen.Write([]byte("var invokeJSONFunc = []byte(`"))
+	gen.Write(invokeJSONFunc)
+	gen.Write([]byte("`)\n\n"))
+
+	gen.Write([]byte("var setupFunc = []byte(`"))
+	gen.Write(setupFunc)
 	gen.Write([]byte("`)\n"))
 
 	fmt.Println("Finished generated.go")
+
 }
