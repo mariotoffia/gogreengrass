@@ -172,23 +172,3 @@ func createRequest(context []byte, payload []byte) (*messages.InvokeRequest, err
 
 	return res, nil
 }
-
-/*
-
- client.publish(
-                topic="feed/ggtest",
-                queueFullPolicy="AllOrException",
-                payload=json.dumps(
-                    {
-                        "message": "Hello world! Sent from Greengrass Core running on platform: {}.".format(my_platform)
-                        + "  Invocation Count: {}".format(my_counter)
-                    }
-                ),
-			)
-
-			-->
-
-Publishing message on topic "feed/ggtest" with Payload "
-{
-    "message": "Hello world! Sent from Greengrass Core running on platform: Linux-4.19.104-microsoft-standard-x86_64-with-glibc2.2.5.  Invocation Count: 2"
-}*/
