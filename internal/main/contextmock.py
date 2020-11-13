@@ -1,4 +1,3 @@
-import json
 from collections import namedtuple
 import re
 import warnings

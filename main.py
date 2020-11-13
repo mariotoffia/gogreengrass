@@ -7,6 +7,9 @@ import greengrasssdk
 class GoString(Structure):
     _fields_ = [("p", c_char_p), ("n", c_longlong)]
 
+# Creating a greengrass core sdk client
+client = greengrasssdk.client("iot-data")
+
 # Load your library that you've built with 
 # go build -o main.so -buildmode=c-shared main.go init.go
 lib = cdll.LoadLibrary("./main.so")
@@ -15,9 +18,6 @@ lib.invokeJSON.restype = c_char_p
 # Initialize the lambda for invocation (one-time only)
 lib.setup()
 
-# Creating a greengrass core sdk client
-client = greengrasssdk.client("iot-data")
-
 # The actual function that you need to bind the lambda entry point to
 def function_handler(event, context):
     result = invokeJSON(context, event)
@@ -25,10 +25,16 @@ def function_handler(event, context):
 
 
 # publish may be called from go lambda to publish data
-def publish(topic: str, queueFullPolicy: str, payload: str):
-    client.publish(topic=topic,
-                   queueFullPolicy=queueFullPolicy,
-                   payload=payload)
+def publishcb(topic: str, queueFullPolicy: str, payload: str):
+    client.publish(topic=topic.decode("utf-8"),
+                   queueFullPolicy=queueFullPolicy.decode("utf-8"),
+                   payload=payload.decode("utf-8"))
+
+#register callbacks
+CMPFUNC = CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
+callback_publish = CMPFUNC(publishcb)
+lib.initcb(callback_publish)
+
 
 # This is invoked by the python lambda function_handler
 def invokeJSON(context: any,

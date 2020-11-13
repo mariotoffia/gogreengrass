@@ -8,8 +8,10 @@
         "ggtest",
         "gogreengrass",
         "greengrasssdk",
+        "initcb",
         "mariotoffia",
         "myfunc",
+        "publishcb",
         "struct"
     ]
 }
