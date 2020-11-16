@@ -40,7 +40,7 @@ func initcb(
 
 //export setup
 func setup() {
-	Setup()
+	once()
 }
 
 //export set_process_buffer

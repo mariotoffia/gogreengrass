@@ -51,7 +51,7 @@ func runner(args args) {
 		}
 	}
 
-	pyFile = bytes.Replace(gluePy, []byte("./main.so"), []byte(args.Binary+".so"), 1)
+	pyFile = bytes.Replace(gluePy, []byte("./main.so"), []byte("./"+args.Binary+".so"), 1)
 
 	writeFile(args.Out, "glue.go", goFile)
 	writeFile(args.Out, "glue.py", pyFile)

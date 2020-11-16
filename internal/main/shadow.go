@@ -3,11 +3,13 @@ package main
 import "C"
 import (
 	"fmt"
+
+	"github.com/mariotoffia/gogreengrass/sdk"
 )
 
-// Setup is the testrunner for this
-func Setup() {
-	//GGDataplane.Publish("hello", sdk.QueueFullPolicyAllOrException, `{"user":"mario"}`)
+// once is the testrunner for this
+func once() {
+	GGDataplane.Publish("hello", sdk.QueueFullPolicyAllOrException, `{"user":"mario"}`)
 
 	s, _ := GGDataplane.GetThingShadow("myThingName")
 	fmt.Printf("--> '%s'\n", s)

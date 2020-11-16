@@ -6,7 +6,7 @@ import (
 )
 
 // Setup is the testrunner for this
-func Setup() {
+func once() {
 	secret, _ := GGSecretsManager.GetSecret("testId", "v1.0.0", "AWSCURRENT")
 	fmt.Println(secret)
 	fmt.Println("bin: " + string(secret.SecretBinary))

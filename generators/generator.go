@@ -6,13 +6,6 @@ import (
 	"os"
 )
 
-var invokeJSONFunc = []byte(`func invokeJSON(context string, payload string) *C.char {
-	return C.CString(sdk.InvokeJSON(context, payload))
-}`)
-
-var setupFunc = []byte(`func setup() {
-}`)
-
 func main() {
 	fmt.Println("Generating embedded resources")
 

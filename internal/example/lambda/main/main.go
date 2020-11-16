@@ -8,7 +8,7 @@ import (
 	"github.com/mariotoffia/gogreengrass/sdk"
 )
 
-// once initializes the GG Lambda
+// once is invoked once when ggc lambda startup
 func once() {
 
 	type MyEvent struct {
@@ -32,7 +32,7 @@ func once() {
 
 		return MyResponse{Age: 19, Topic: "feed/myfunc"}, nil
 	})
-
 }
-
-func main() {}
+func main() {
+	// Standard AWS cloud lambda initialization code
+}
