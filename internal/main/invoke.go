@@ -30,7 +30,6 @@ func Setup() {
 			lc, lc.ClientContext.Custom["subject"], data,
 		)
 
-		GGFunctions.Publish("hello/world", sdk.QueueFullPolicyAllOrException, `{"my":"prop"}`)
 		return MyResponse{Age: 19, Topic: "feed/myfunc"}, nil
 	})
 

@@ -1,10 +1,11 @@
 package sdk
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -12,10 +13,56 @@ import (
 	"github.com/aws/aws-lambda-go/lambda/messages"
 )
 
-const (
-	msPerSecond = int64(time.Second / time.Millisecond)
-	nsPerMS     = int64(time.Millisecond / time.Nanosecond)
-)
+// LambdaClient is a client to do lambda operations
+type LambdaClient interface {
+	// Invoke will invoke a lambda function by name or ARN.
+	//
+	// .Parameters
+	// |===
+	// |Name |Description
+	//
+	// |c
+	// |Is the context, where the `ClientContext` is extracted from (if any)
+	//
+	// |functionName
+	// a|
+	// The Amazon Resource Name (ARN) of the Lambda function to invoke. Name formats:
+	// * Qualified ARN - The function ARN with the version suffix. e.g. arn:aws:lambda:aws-region:acct-id:function:helloworld:1
+	// * Unqualified ARN - The function ARN without the version suffix. e.g. arn:aws:lambda:aws-region:acct-id:function:helloworld
+	//
+	// |invocationType
+	// a|
+	// Two options below are valid:
+	// * _RequestResponse_ (default) - Invoke the Lambda synchronously. Block until the function returns a response or times out.
+	// * _Event_ - Invoke the Lambda asynchronously. The response only includes empty payload.
+	//
+	// |qualifier
+	// |Optional parameter to specify a Lambda function version if it was not included in the FunctionName field.
+	// If you specify a function version, the API uses the qualified function ARN to invoke a specific Lambda function.
+	//
+	// |payload
+	// |Optional input for the Lambda function to invoke.
+	// |===
+	//
+	// If it succeeds it may return the result of the invocation (based on the invocation type). Otherwise
+	// an error returned.
+	Invoke(c context.Context,
+		functionName,
+		invocationType,
+		qualifier string,
+		payload []byte) (io.Reader, error)
+}
+
+type invokeResult struct {
+	// TODO: ref to something here passed back and forth..
+}
+
+// Read - calls the `StreamingBody` on the python side to get more data.
+// When no more data _io.EOF_ is returned.
+// TODO: Implement me!
+func (ir *invokeResult) Read(p []byte) (n int, err error) {
+	return 0, nil
+}
 
 type ggContext struct {
 	RequestID          string                 `json:"aws_request_id"`
@@ -38,7 +85,6 @@ func (ggc *ggContext) getHeader(name string) string {
 	return ""
 }
 
-var mtx sync.Mutex
 var function *lambda.Function
 
 // Register takes a handler function. See lambda github project for valid signatures
@@ -78,6 +124,11 @@ func InvokeJSON(context string, payload string) string {
 	payload = string(resp.Payload)
 	return fmt.Sprintf(`{"Payload": %s}`, payload)
 }
+
+const (
+	msPerSecond = int64(time.Second / time.Millisecond)
+	nsPerMS     = int64(time.Millisecond / time.Nanosecond)
+)
 
 func createRequest(context []byte, payload []byte) (*messages.InvokeRequest, error) {
 

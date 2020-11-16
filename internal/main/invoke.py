@@ -1,36 +1,17 @@
-from ctypes import *
+from glue import GoString, lib
+from ctypes import c_char_p
 import json
-
 from contextmock import _Context
 
 def function_handler(event, context):
     result = invokeJSON(context, event)
     print("result: " + result)
 
-class GoString(Structure):
-    _fields_ = [("p", c_char_p), ("n", c_longlong)]
-
-lib = cdll.LoadLibrary("./main.so")
-lib.invokeJSON.restype = c_char_p
-
-
 # Main code for lambda
+lib.invokeJSON.restype = c_char_p
 lib.setup()
 
-def publishcb(topic: str, queueFullPolicy: str, payload: str):
-    print("publishing")
-    print("----------")
-    print(topic.decode("utf-8"))
-    print(queueFullPolicy.decode("utf-8"))
-    print(payload.decode("utf-8"))
-
-CMPFUNC = CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
-callback_publish = CMPFUNC(publishcb)
-lib.initcb(callback_publish)
-
-def invokeJSON(context: _Context,
-               event: any,
-               deadlineMS: str = '300000') -> str:
+def invokeJSON(context,event, deadlineMS: str = '300000') -> str:
 
     cDump = json.dumps({
         'aws_request_id': context.aws_request_id,
