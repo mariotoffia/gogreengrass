@@ -1,4 +1,4 @@
-all: invoke shadow
+all: clean invoke shadow secrets 
 
 invoke:
 	@go build -o main.so -buildmode=c-shared invoke.go glue.go
