@@ -35,4 +35,5 @@ func once() {
 }
 func main() {
 	// Standard AWS cloud lambda initialization code
+	// Your standard lambda SDK registration code here
 }
