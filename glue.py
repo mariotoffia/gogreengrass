@@ -25,16 +25,41 @@ def function_handler(event, context):
 
 
 # publish may be called from go lambda to publish data
+@CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
 def publishcb(topic: str, queueFullPolicy: str, payload: str):
-    client.publish(topic=topic.decode("utf-8"),
+     client.publish(topic=topic.decode("utf-8"),
                    queueFullPolicy=queueFullPolicy.decode("utf-8"),
                    payload=payload.decode("utf-8"))
 
-#register callbacks
-CMPFUNC = CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
-callback_publish = CMPFUNC(publishcb)
-lib.initcb(callback_publish)
+@CFUNCTYPE(None, c_char_p, c_char_p)
+def getThingShadow(ctx: str, thingName: str):
 
+    result = client.get_thing_shadow(thingName=thingName).payload
+    
+    lib.set_process_buffer(ctx, result)
+
+@CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
+def updateThingShadow(ctx: str, thingName: str, payload: str):
+    
+    result = client.update_thing_shadow(
+        thingName=thingName,
+        payload=payload).payload
+
+    lib.set_process_buffer(ctx, result)
+
+@CFUNCTYPE(None, c_char_p, c_char_p)
+def deleteThingShadow(ctx: str, thingName: str):
+    
+    result = client.delete_thing_shadow(thingName=thingName).payload
+    
+    lib.set_process_buffer(ctx, result)
+
+lib.initcb(
+    publishcb,
+    getThingShadow,
+    updateThingShadow,
+    deleteThingShadow
+)
 
 # This is invoked by the python lambda function_handler
 def invokeJSON(context: any,
