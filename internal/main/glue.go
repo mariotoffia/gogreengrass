@@ -5,6 +5,8 @@ typedef void (*publish) (char* topic, char *policy, char *payload);
 typedef char* (*getThingShadow) (char* thingName);
 typedef void (*updateThingShadow) (char *ctx, char* thingName, char *payload);
 typedef void (*deleteThingShadow) (char *ctx, char* thingName);
+typedef void (*get_secret) (char *ctx, char* id, char *version, char *stage);
+
 */
 import "C"
 
@@ -15,18 +17,24 @@ import (
 // GGDataplane is the functions to for dataplane against GGC API
 var GGDataplane sdk.DataplaneClient
 
+// GGSecretsManager is the functions for retrieving secrets via GGC API
+var GGSecretsManager sdk.SecretsManager
+
 //export initcb
 func initcb(
 	fnPublish C.publish,
 	fnGetThingShadow C.getThingShadow,
 	fnUpdateThingShadow C.updateThingShadow,
-	fnDeleteThingShadow C.deleteThingShadow) {
+	fnDeleteThingShadow C.deleteThingShadow,
+	fnGetSecret C.get_secret) {
 
 	GGDataplane = sdk.NewDataplaneClient(
 		fnPublish,
 		fnGetThingShadow,
 		fnUpdateThingShadow,
 		fnDeleteThingShadow)
+
+	GGSecretsManager = sdk.NewSecretsManagerClient(fnGetSecret)
 
 }
 

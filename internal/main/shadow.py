@@ -35,7 +35,8 @@ lib.initcb(
     publishcb,
     getThingShadow,
     updateThingShadow,
-    deleteThingShadow
+    deleteThingShadow,
+    None
 )
 
 lib.setup()

@@ -9,6 +9,7 @@ class GoString(Structure):
 
 # Creating a greengrass core sdk client
 client = greengrasssdk.client("iot-data")
+sm = greengrasssdk.client("secretsmanager")
 
 # Load your library that you've built with 
 # go build -o main.so -buildmode=c-shared main.go init.go
@@ -32,14 +33,11 @@ def publishcb(topic: str, queueFullPolicy: str, payload: str):
 
 @CFUNCTYPE(None, c_char_p, c_char_p)
 def getThingShadow(ctx: str, thingName: str):
-
     result = client.get_thing_shadow(thingName=thingName).payload
-    
     lib.set_process_buffer(ctx, result)
 
 @CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
 def updateThingShadow(ctx: str, thingName: str, payload: str):
-    
     result = client.update_thing_shadow(
         thingName=thingName,
         payload=payload).payload
@@ -48,16 +46,32 @@ def updateThingShadow(ctx: str, thingName: str, payload: str):
 
 @CFUNCTYPE(None, c_char_p, c_char_p)
 def deleteThingShadow(ctx: str, thingName: str):
-    
     result = client.delete_thing_shadow(thingName=thingName).payload
-
     lib.set_process_buffer(ctx, result)
+
+@CFUNCTYPE(None, c_char_p, c_char_p, c_char_p, c_char_p)
+def getSecret(ctx: str, secretId: str, versionId: str, versionStage: str):
+    ret  = sm.get_secret_value(SecretId=secretId, VersionId=versionId, VersionStage=versionStage)
+
+    o = json.dumps({
+        'arn': ret.ARN,
+        'name':ret.Name,
+        'version': ret.VersionId,
+        'bin': ret.SecretBinary.encode("utf-8"),
+        'secret': ret.SecretString,
+        'stages': ret.VersionStages,
+        'created':'2020-18-02T18:34:00'
+    }) 
+    ## todo: - created: ret.CreatedDate (datetime)
+
+    lib.set_process_buffer(ctx, o.encode("utf-8"))
 
 lib.initcb(
     publishcb,
     getThingShadow,
     updateThingShadow,
-    deleteThingShadow
+    deleteThingShadow,
+    getSecret
 )
 
 # This is invoked by the python lambda function_handler

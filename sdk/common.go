@@ -26,7 +26,12 @@ func getProcessBuffer(ctx string) string {
 	mtx.Lock()
 	defer mtx.Unlock()
 
-	return processBuffer[ctx]
+	if buff, ok := processBuffer[ctx]; ok {
+		delete(processBuffer, ctx)
+		return buff
+	}
+
+	return ""
 }
 
 func getContext() string {
