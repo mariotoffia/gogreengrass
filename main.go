@@ -22,10 +22,11 @@ type args struct {
 	Package     string `arg:"-p" help:"an optional package name instead of main" placeholder:"PACKAGE"`
 	Binary      string `arg:"-b" help:"an optional name of the binary that the build system produces, default is foldername.o"`
 	DownloadSDK bool   `arg:"-d" help:"If set to true, it will download the python sdk (it is needed to be in current folder)"`
+	Force       bool   `arg:"-f" help:"Force downloads the SDK (even if exists in target folder)`
 }
 
 func (args) Version() string {
-	return "gogreengrass v0.0.1"
+	return "gogreengrass v0.0.2"
 }
 
 func main() {
@@ -57,7 +58,7 @@ func runner(args args) {
 	writeFile(args.Out, "glue.py", pyFile)
 
 	if args.DownloadSDK {
-		downloadGreengrassSDK()
+		downloadGreengrassSDK(args.Out, args.Force)
 	}
 }
 
@@ -79,22 +80,39 @@ func writeFile(path, file string, data []byte) {
 	}
 }
 
-func downloadGreengrassSDK() {
+func downloadGreengrassSDK(path string, force bool) {
 
 	sdk := "greengrasssdk-1.6.0"
 	fileName := sdk + ".tar.gz"
+	ggpath := "greengrasssdk"
+	sdkpath := sdk
 	URL := "https://files.pythonhosted.org/packages/7f/d8/a17d97ba00275c13f3d0c6c82485aa6aa3ca9c24a61b3e2eae0fadee3d1b/" + fileName
 
-	err := downloadFile(URL, fileName)
+	fp := fileName
+	if path != "" {
+
+		fp = filepath.Join(path, fileName)
+		ggpath = filepath.Join(path, ggpath)
+		sdkpath = filepath.Join(path, sdkpath)
+
+	}
+
+	if !force {
+		if _, err := os.Stat(ggpath); !os.IsNotExist(err) {
+			return
+		}
+	}
+
+	err := downloadFile(URL, fp)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	fmt.Printf("File %s downloaded in current working directory\n", fileName)
+	fmt.Printf("File %s downloaded\n", fp)
 
 	os.RemoveAll(sdk)
-	extract(fileName)
+	extract(fp)
 
 	os.Rename(filepath.Join(sdk, "greengrasssdk"), "./greengrasssdk")
 	os.RemoveAll(sdk)

@@ -5,6 +5,7 @@
         "Nanos",
         "cdll",
         "ctypes",
+        "ggpath",
         "ggtest",
         "gogreengrass",
         "greengrasssdk",
@@ -12,6 +13,7 @@
         "mariotoffia",
         "myfunc",
         "publishcb",
+        "sdkpath",
         "struct"
     ]
 }
