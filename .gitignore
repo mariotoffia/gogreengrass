@@ -17,6 +17,7 @@ gogreengrass
 generated.go
 glue.go
 glue.py
+greengrasssdk*
 
 ## Python temp stuff
 __pycache__
