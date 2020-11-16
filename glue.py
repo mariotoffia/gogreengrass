@@ -24,7 +24,6 @@ def function_handler(event, context):
     return result
 
 
-# publish may be called from go lambda to publish data
 @CFUNCTYPE(None, c_char_p, c_char_p, c_char_p)
 def publishcb(topic: str, queueFullPolicy: str, payload: str):
      client.publish(topic=topic.decode("utf-8"),
@@ -51,7 +50,7 @@ def updateThingShadow(ctx: str, thingName: str, payload: str):
 def deleteThingShadow(ctx: str, thingName: str):
     
     result = client.delete_thing_shadow(thingName=thingName).payload
-    
+
     lib.set_process_buffer(ctx, result)
 
 lib.initcb(
