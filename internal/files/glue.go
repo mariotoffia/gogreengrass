@@ -2,7 +2,7 @@ package main
 
 /*
 typedef void (*publish) (char* topic, char *policy, char *payload);
-typedef char* (*getThingShadow) (char* thingName);
+typedef void (*getThingShadow) (char* thingName);
 typedef void (*updateThingShadow) (char *ctx, char* thingName, char *payload);
 typedef void (*deleteThingShadow) (char *ctx, char* thingName);
 typedef void (*get_secret) (char *ctx, char* id, char *version, char *stage);
