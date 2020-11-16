@@ -16,31 +16,32 @@ var setupFunc = []byte(`func setup() {
 func main() {
 	fmt.Println("Generating embedded resources")
 
-	content, err := ioutil.ReadFile("main.py")
-	if err != nil {
-		fmt.Println("Failed to read main.py file:", err.Error())
-		return
-	}
-
 	gen, err := os.Create("generated.go")
 	if err != nil {
 		fmt.Println("Failed to create generated.go file:", err.Error())
 		return
 	}
 
+	content, err := ioutil.ReadFile("./internal/files/glue.go")
+	if err != nil {
+		fmt.Println("Failed to read glue.go file:", err.Error())
+		return
+	}
+
 	gen.Write([]byte("package main\n\n"))
-	gen.Write([]byte("var mainPy = []byte(`"))
+	gen.Write([]byte("var glueGo = []byte(`"))
 	gen.Write(content)
 	gen.Write([]byte("`)\n\n"))
 
-	gen.Write([]byte("var invokeJSONFunc = []byte(`"))
-	gen.Write(invokeJSONFunc)
+	content, err = ioutil.ReadFile("./internal/files/glue.py")
+	if err != nil {
+		fmt.Println("Failed to read glue.py file:", err.Error())
+		return
+	}
+
+	gen.Write([]byte("var gluePy = []byte(`"))
+	gen.Write(content)
 	gen.Write([]byte("`)\n\n"))
 
-	gen.Write([]byte("var setupFunc = []byte(`"))
-	gen.Write(setupFunc)
-	gen.Write([]byte("`)\n"))
-
 	fmt.Println("Finished generated.go")
-
 }

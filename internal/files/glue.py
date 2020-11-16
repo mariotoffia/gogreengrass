@@ -16,9 +16,6 @@ sm = greengrasssdk.client("secretsmanager")
 lib = cdll.LoadLibrary("./main.so")
 lib.invokeJSON.restype = c_char_p
 
-# Initialize the lambda for invocation (one-time only)
-lib.setup()
-
 # The actual function that you need to bind the lambda entry point to
 def function_handler(event, context):
     result = invokeJSON(context, event)
@@ -74,7 +71,10 @@ lib.initcb(
     getSecret
 )
 
-# This is invoked by the python lambda function_handler
+# Initialize the lambda for invocation (one-time only)
+lib.setup()
+
+# Invokes the golang lambda handler (non binary version).
 def invokeJSON(context: any,
                event: any,
                deadlineMS: str = '300000') -> str:
