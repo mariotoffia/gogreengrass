@@ -5,19 +5,6 @@ the python SDK to do device shadow operations, secrets manager and publish data 
 Install the command line tool by `go get -u github.com/mariotoffia/gogreengrass`. This tool may be used in order to generate
 the necessary go and python shim. For example (_see internal/example/lambda/main_):
 
-```make
-all: build
-
-generate: clean
-	@gogreengrass -d
-
-build: generate
-	@go build -o main.so -buildmode=c-shared main.go glue.go
-
-clean:
-	@rm -f main.so main.h glue.go glue.py > /dev/null 2>&1
-```
-
 The _main.go_ contains the lambda code in this sample.
 
 ```go
