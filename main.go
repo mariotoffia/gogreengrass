@@ -81,8 +81,9 @@ func writeFile(path, file string, data []byte) {
 
 func downloadGreengrassSDK() {
 
-	fileName := "greengrasssdk-1.6.0.tar.gz"
-	URL := "https://files.pythonhosted.org/packages/7f/d8/a17d97ba00275c13f3d0c6c82485aa6aa3ca9c24a61b3e2eae0fadee3d1b/greengrasssdk-1.6.0.tar.gz"
+	sdk := "greengrasssdk-1.6.0"
+	fileName := sdk + ".tar.gz"
+	URL := "https://files.pythonhosted.org/packages/7f/d8/a17d97ba00275c13f3d0c6c82485aa6aa3ca9c24a61b3e2eae0fadee3d1b/" + fileName
 
 	err := downloadFile(URL, fileName)
 	if err != nil {
@@ -90,8 +91,14 @@ func downloadGreengrassSDK() {
 		return
 	}
 
-	fmt.Printf("File %s downloaded in current working directory", fileName)
+	fmt.Printf("File %s downloaded in current working directory\n", fileName)
+
+	os.RemoveAll(sdk)
 	extract(fileName)
+
+	os.Rename(filepath.Join(sdk, "greengrasssdk"), "./greengrasssdk")
+	os.RemoveAll(sdk)
+	os.Remove(fileName)
 }
 
 func extract(filepath string) {
