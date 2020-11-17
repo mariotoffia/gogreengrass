@@ -8,5 +8,5 @@ install: build
 	@go install
 
 clean:
-	@rm -f gogreengrass generated.go glue.go glue.py
+	@rm -f gogreengrass glue.go glue.py
 	@rm -rf greengrasssdk
