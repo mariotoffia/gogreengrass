@@ -68,13 +68,12 @@ gg_error gg_log(gg_log_level level, const char *format, ...) {
 
 gg_error gg_request_init(gg_request *ggreq) {
     (void)ggreq;
-    return GGE_RESERVED_MAX;
+    return GGE_SUCCESS;
 }
 
 gg_error gg_request_close(gg_request ggreq) {
     (void)ggreq;
-    print_loaded_stub_error();
-    return GGE_RESERVED_MAX;
+    return GGE_SUCCESS;
 }
 
 gg_error gg_request_read(gg_request ggreq, void *buffer, size_t buffer_size,

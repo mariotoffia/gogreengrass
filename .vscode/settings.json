@@ -3,6 +3,7 @@
         "CFUNCTYPE",
         "CMPFUNC",
         "LDFLAGS",
+        "Mqtt",
         "Nanos",
         "Printf",
         "Thandler",

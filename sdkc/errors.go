@@ -1,5 +1,7 @@
 package sdkc
 
+import "fmt"
+
 // GreenGrassCode is the error codes that the runtime returns
 type GreenGrassCode int
 
@@ -24,3 +26,15 @@ const (
 	GreenGrassCodeReservedMax GreenGrassCode = 6
 	GreenGrassCodeReservedPad GreenGrassCode = 0x7FFFFFFF
 )
+
+func createError(errMsg string, code GreenGrassCode) error {
+
+	if code == GreenGrassCodeSuccess {
+		return nil
+	}
+
+	err := fmt.Errorf("%s, code: %d", errMsg, code)
+	Log(LogLevelError, err.Error())
+
+	return err
+}
