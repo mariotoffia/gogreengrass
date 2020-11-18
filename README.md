@@ -1,12 +1,12 @@
 # gogreengrass
 
-This library has two modes of operation to deploy and exwecute the _go lambdas_. 
+This library has two modes of operation to deploy and execute the _go lambdas_. 
 
 1. One is standard lambda and thus wrapped as a python 3.7 and may be managed in AWS console and deployed onto GGC. The go lambda will be invoked through the python wrapper.  
 
 2. Use green grass lambda executable. In this mode the go lambda is dynamically linked to the GGC C runtime and is much more optimal. The only downside is that the lambdas is only visible inside the Greengrass Core administration utility and not in the standard Lambda view. Other than that they behave exactly as a lambda, but i much more lightweight.
 
-Both may use e.g. _CDK_ to deploy the lambda. To e.g. deploy the following green grass executable
+Both may use e.g. _CDK_ to deploy the lambda. To e.g. deploy the following greengrass executable
 
 ```golang
 package main
@@ -54,7 +54,7 @@ func main() {
 }
 ```
 
-the following _CDK_ definition was used (_see sample: internal/test/sdkc/lambda_).
+The following _CDK_ definition was used (_see sample: internal/test/sdkc/lambda_).
 
 ```typescript
 import * as cdk from '@aws-cdk/core';
@@ -85,6 +85,7 @@ export class TestLambda extends cdk.Stack {
   }
 }
 ```
+_Note that the lambda runtime is in this case arn:aws:greengrass:::runtime/function/executable_ (if python use `Runtime.PYTHON_3_7`).
 
 When doing `npm run deploy` it will show up in the greengrass console to be added to a group.
 
