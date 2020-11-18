@@ -9,10 +9,7 @@ import (
 	"unsafe"
 )
 
-// TODO: remove these links when done
 // https://github.com/aws/aws-greengrass-core-sdk-c/tree/master/aws-greengrass-core-sdk-c-example
-// https://golang.org/cmd/cgo/
-// https://docs.aws.amazon.com/greengrass/latest/developerguide/lambda-functions.html#lambda-executables
 
 // ShadowAPI encapsulates communication with the device shadow API.
 type ShadowAPI struct {

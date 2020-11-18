@@ -95,8 +95,19 @@ func (ar *APIRequest) handleRequestResponse(msg string, e GreenGrassCode, re Req
 
 	// read success msg or error msg
 	s := ""
-	if data, err := ioutil.ReadAll(NewRequestReader()); err == nil {
+	data, err := ioutil.ReadAll(NewRequestReader())
+	if err == nil {
 		s = string(data)
+	} else {
+
+		ar.err = createErrorFromRequestStatus(
+			fmt.Sprintf(
+				"Failed to read error message from response when %s, error: %s",
+				msg, err.Error(),
+			), re,
+		)
+
+		return ""
 	}
 
 	if e != RequestStatusSuccess {
