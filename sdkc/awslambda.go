@@ -1,40 +1,11 @@
 package sdkc
 
 import (
-	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-lambda-go/lambda/messages"
 )
-
-const (
-	msPerSecond = int64(time.Second / time.Millisecond)
-	nsPerMS     = int64(time.Millisecond / time.Nanosecond)
-)
-
-type ggContext struct {
-	RequestID          string                 `json:"aws_request_id"`
-	InvokedFunctionARN string                 `json:"invoked_function_arn"`
-	FunctionName       string                 `json:"function_name"`
-	FunctionVersion    string                 `json:"function_version"`
-	Identity           *json.RawMessage       `json:"identity,omitempty"`
-	ClientContext      *json.RawMessage       `json:"client_context,omitempty"`
-	Headers            map[string]interface{} `json:"headers,omitempty"`
-}
-
-func (ggc *ggContext) getHeader(name string) string {
-
-	if val, ok := ggc.Headers[name]; ok {
-		if str, ok := val.(string); ok {
-			return str
-		}
-	}
-
-	return ""
-}
 
 var function *lambda.Function
 
@@ -51,6 +22,7 @@ func Start(handler interface{}) {
 // Documentation on lambda function layout:
 // https://github.com/aws/aws-lambda-go/blob/f24acb29a08c3a45eb95e6cd4ae56fbfabf4f4a5/lambda/entry.go#L39
 func StartWithOpts(option RuntimeOption, handler interface{}) {
+
 	function = lambda.NewFunction(lambda.NewHandler(handler))
 
 	GGStartWithOpts(
@@ -61,7 +33,7 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 			Log(LogLevelInfo, "FunctionARN: '%s'\n", lc.FunctionARN)
 			Log(LogLevelInfo, "Payload: '%s'\n", string(lc.Payload))
 
-			resp, err := invokeJSONRequest(lc.ClientContext, lc.Payload)
+			resp, err := invokeJSONRequest(lc)
 
 			if err != nil {
 
@@ -79,9 +51,9 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 
 }
 
-func invokeJSONRequest(context string, payload []byte) ([]byte, error) {
+func invokeJSONRequest(lc *LambdaContextSlim) ([]byte, error) {
 
-	req, err := createRequest([]byte(context), payload)
+	req, err := createRequest(lc)
 
 	if err != nil {
 		fmt.Printf("%s", err.Error())
@@ -99,43 +71,21 @@ func invokeJSONRequest(context string, payload []byte) ([]byte, error) {
 	return resp.Payload, nil
 }
 
-func createRequest(context []byte, payload []byte) (*messages.InvokeRequest, error) {
-
-	var ctx ggContext
-	if err := json.Unmarshal(context, &ctx); nil != err {
-		return nil, fmt.Errorf("Failed to unmarshal context: %s, error: %s", string(context), err.Error())
-	}
-
-	deadlineEpochMS, err := strconv.ParseInt(ctx.getHeader("Lambda-Runtime-Deadline-Ms"), 10, 64)
-
-	if err != nil {
-		deadlineEpochMS = 30000 /* 3s */
-	}
+func createRequest(lc *LambdaContextSlim) (*messages.InvokeRequest, error) {
 
 	res := &messages.InvokeRequest{
-		InvokedFunctionArn: ctx.InvokedFunctionARN,
-		XAmznTraceId:       ctx.getHeader("Lambda-Runtime-Trace-Id"),
-		RequestId:          ctx.RequestID,
+		InvokedFunctionArn: lc.FunctionARN,
+		XAmznTraceId:       "",
+		RequestId:          "",
 		Deadline: messages.InvokeRequest_Timestamp{
-			Seconds: deadlineEpochMS / msPerSecond,
-			Nanos:   (deadlineEpochMS % msPerSecond) * nsPerMS,
+			Seconds: int64(9223372036854775800),
+			Nanos:   0,
 		},
-		Payload: payload,
+		Payload: lc.Payload,
 	}
 
-	if ctx.ClientContext != nil {
-		res.ClientContext = []byte((*ctx.ClientContext))
-	}
-
-	if ctx.Identity != nil {
-		if err := json.Unmarshal([]byte((*ctx.Identity)), res); err != nil {
-
-			return nil, fmt.Errorf(
-				"failed to unmarshal cognito identity json: %s, error: %s",
-				ctx.Identity, err.Error(),
-			)
-
-		}
+	if lc.ClientContext != "" {
+		res.ClientContext = []byte((lc.ClientContext))
 	}
 
 	return res, nil

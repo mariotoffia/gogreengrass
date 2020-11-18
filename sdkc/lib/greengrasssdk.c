@@ -97,17 +97,8 @@ gg_error gg_runtime_start(gg_lambda_handler handler, uint32_t opt) {
     print_loaded_stub_error();
     gg_lambda_context ctx;
 
-    ctx.client_context = "{" 
-            "\"aws_request_id\":\"abc-123\",\n"
-            "\"client_context\":{\n"
-                "\"custom\": { \"subject\": \"my/topic\"}\n"
-            "},\n"
-            "\"function_name\": \"my-name\",\n"
-            "\"function_version\":\"1\",\n"
-            "\"invoked_function_arn\":\"arn:my-arn\"\n"
-        "}";
-
-    ctx.function_arn = "arn:my-arn";
+    ctx.client_context = "{\"custom\":{\"subject\":\"invoke/testlambda\"}}";
+    ctx.function_arn = "arn:aws:lambda:eu-central-1:033549287452:function:testlambda:2";
 
     handler(&ctx);
     return GGE_SUCCESS;

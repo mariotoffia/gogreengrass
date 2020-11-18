@@ -14,11 +14,15 @@ export class TestLambda extends cdk.Stack {
       handler: 'testlambda',
       code: lambda.Code.fromAsset(path.join(__dirname, '../../_out/testlambda')),
       timeout: cdk.Duration.seconds(30),
+      currentVersionOptions: {
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      },
       environment: {
         IS_ENV_ON_GGC_SET: 'yes they are!',
       }
     });
 
+    testlambda.currentVersion.addAlias('live')
   }
 }
 
