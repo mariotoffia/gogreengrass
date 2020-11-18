@@ -1,4 +1,94 @@
 # gogreengrass
+
+This library has two modes of operation to deploy and exwecute the _go lambdas_. 
+
+1. One is standard lambda and thus wrapped as a python 3.7 and may be managed in AWS console and deployed onto GGC. The go lambda will be invoked through the python wrapper.  
+
+2. Use green grass lambda executable. In this mode the go lambda is dynamically linked to the GGC C runtime and is much more optimal. The only downside is that the lambdas is only visible inside the Greengrass Core administration utility and not in the standard Lambda view. Other than that they behave exactly as a lambda, but i much more lightweight.
+
+Both may use e.g. _CDK_ to deploy the lambda. To e.g. deploy the following green grass executable
+
+```golang
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/aws/aws-lambda-go/lambdacontext"
+	"github.com/mariotoffia/gogreengrass/sdkc"
+)
+
+func main() {
+	sdkc.Log(sdkc.LogLevelInfo, "Register lambda...\n")
+
+	type MyEvent struct {
+		Data  int    `json:"data"`
+		Hello string `json:"hello"`
+	}
+
+	type MyResponse struct {
+		Age   int    `json:"age"`
+		Topic string `json:"topic"`
+	}
+
+	sdkc.Start(func(c context.Context, data MyEvent) (MyResponse, error) {
+
+		lc, _ := lambdacontext.FromContext(c)
+
+		fmt.Printf(
+			"context: %v, topic: %s, data: '%v'\n",
+			lc, lc.ClientContext.Custom["subject"], data,
+		)
+
+		resp := MyResponse{Age: 19, Topic: "feed/myfunc"}
+
+		sdkc.NewQueue().PublishObject(
+			"feed/testlambda", sdkc.QueueFullPolicyOptionAllOrError, &resp,
+		)
+
+		return resp, nil
+	})
+
+	sdkc.Log(sdkc.LogLevelInfo, "Exit main()\n")
+}
+```
+
+the following _CDK_ definition was used (_see sample: internal/test/sdkc/lambda_).
+
+```typescript
+import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+import path = require("path");
+
+const GREENGRASS_EXECUTABLE = new lambda.Runtime('arn:aws:greengrass:::runtime/function/executable')
+export class TestLambda extends cdk.Stack {
+
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const testlambda = new lambda.Function(this, 'testlambda', {
+      runtime: GREENGRASS_EXECUTABLE,
+      functionName: 'testlambda',
+      handler: 'testlambda',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../_out/testlambda')),
+      timeout: cdk.Duration.seconds(30),
+      currentVersionOptions: {
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      },
+      environment: {
+        IS_ENV_ON_GGC_SET: 'yes they are!',
+      }
+    });
+
+    testlambda.currentVersion.addAlias('live')
+  }
+}
+```
+
+When doing `npm run deploy` it will show up in the greengrass console to be added to a group.
+
+## Python wrapper
 Python wrapper to deploy go lambdas into green grass. It also encapsulates the python greengrass SDK so go code may invoke
 the python SDK to do device shadow operations, secrets manager and publish data onto _MQTT_.
 
