@@ -30,7 +30,13 @@ func main() {
 			lc, lc.ClientContext.Custom["subject"], data,
 		)
 
-		return MyResponse{Age: 19, Topic: "feed/myfunc"}, nil
+		resp := MyResponse{Age: 19, Topic: "feed/myfunc"}
+
+		sdkc.NewQueue().PublishObject(
+			"feed/lambdatest", sdkc.QueueFullPolicyOptionAllOrError, &resp,
+		)
+
+		return resp, nil
 	})
 
 	sdkc.Log(sdkc.LogLevelInfo, "Exit main()\n")

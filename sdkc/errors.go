@@ -34,7 +34,7 @@ func createError(errMsg string, code GreenGrassCode) error {
 	}
 
 	err := fmt.Errorf("%s, code: %d", errMsg, code)
-	Log(LogLevelError, err.Error())
+	Log(LogLevelError, err.Error()+"\n")
 
 	return err
 }

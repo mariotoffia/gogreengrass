@@ -38,7 +38,7 @@ func createErrorFromRequestStatus(errorMessage string, status RequestStatus) err
 	}
 
 	err := fmt.Errorf("%s, status: %d", errorMessage, status)
-	Log(LogLevelInfo, err.Error())
+	Log(LogLevelInfo, err.Error()+"\n")
 
 	return err
 }

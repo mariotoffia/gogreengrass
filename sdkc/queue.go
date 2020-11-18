@@ -5,6 +5,7 @@ package sdkc
 */
 import "C"
 import (
+	"encoding/json"
 	"fmt"
 	"unsafe"
 )
@@ -87,4 +88,25 @@ func (q *Queue) Publish(topic string, option QueueFullPolicyOption, payload []by
 		e, RequestStatus(res.request_status),
 	)
 
+}
+
+// PublishObject will publish the object, marshalled as
+// _JSON_, onto specified topic.
+func (q *Queue) PublishObject(
+	topic string,
+	policy QueueFullPolicyOption,
+	object interface{}) *Queue {
+
+	if nil == object {
+		return q
+	}
+
+	data, err := json.Marshal(object)
+	if nil == err {
+		q.Publish(topic, policy, data)
+	} else {
+		q.err = fmt.Errorf("Failed to marshal object, error: %s", err.Error())
+	}
+
+	return q
 }
