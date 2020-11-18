@@ -5,13 +5,15 @@
 #include <stdio.h>
 
 #include "greengrasssdk.h"
+#include <stdarg.h>
+#include <string.h>
 
 /*
  * In case the system loads the stub library instead of the true
  * implementation library shipped with GGC by mistake, print an error.
  */
 static void print_loaded_stub_error() {
-    fprintf(stderr, "ERROR: Loaded stub instead of implementation library!\n");
+    gg_log(GG_LOG_ERROR, "Loaded stub instead of implementation library!\n");
 }
 
 /***************************************
@@ -29,9 +31,34 @@ gg_error gg_global_init(uint32_t opt) {
 ***************************************/
 
 gg_error gg_log(gg_log_level level, const char *format, ...) {
-    (void)level;
-    (void)format;
-    print_loaded_stub_error();
+
+    va_list logArgs;
+    va_start(logArgs, format);
+    
+    switch(level) {
+        case GG_LOG_DEBUG:
+            fprintf(stderr, "DEBUG ");
+            break;
+        case GG_LOG_INFO:
+            fprintf(stderr, "INFO ");
+            break;
+        case GG_LOG_WARN:
+            fprintf(stderr, "WARN ");
+            break;
+        case GG_LOG_ERROR:
+            fprintf(stderr, "ERROR ");
+            break;
+        case GG_LOG_FATAL:
+            fprintf(stderr, "FATAL ");
+            break;
+        default:
+            break;
+    }
+
+    vfprintf(stderr, format, logArgs);
+
+    va_end(logArgs);
+
     return GGE_RESERVED_MAX;
 }
 
@@ -41,7 +68,6 @@ gg_error gg_log(gg_log_level level, const char *format, ...) {
 
 gg_error gg_request_init(gg_request *ggreq) {
     (void)ggreq;
-    print_loaded_stub_error();
     return GGE_RESERVED_MAX;
 }
 
@@ -69,30 +95,61 @@ gg_error gg_runtime_start(gg_lambda_handler handler, uint32_t opt) {
     (void)handler;
     (void)opt;
     print_loaded_stub_error();
-    return GGE_RESERVED_MAX;
+    gg_lambda_context ctx;
+
+    ctx.client_context = "{" 
+            "\"aws_request_id\":\"abc-123\",\n"
+            "\"client_context\":{\n"
+                "\"custom\": { \"subject\": \"my/topic\"}\n"
+            "},\n"
+            "\"function_name\": \"my-name\",\n"
+            "\"function_version\":\"1\",\n"
+            "\"invoked_function_arn\":\"arn:my-arn\"\n"
+        "}";
+
+    ctx.function_arn = "arn:my-arn";
+
+    handler(&ctx);
+    return GGE_SUCCESS;
 }
+
+int readcnt = 0;
+char payload[] = "{\"data\":44, \"hello\":\"world\"}";
 
 gg_error gg_lambda_handler_read(void *buffer, size_t buffer_size,
                                 size_t *amount_read) {
-    (void)buffer;
-    (void)buffer_size;
-    (void)amount_read;
-    print_loaded_stub_error();
-    return GGE_RESERVED_MAX;
+    
+    int left = strlen(payload) - readcnt;
+
+    if (left == 0) {
+        return GGE_SUCCESS;
+    }
+
+    char *ptr = payload;
+
+    strncpy(buffer, (ptr + readcnt), left); 
+    readcnt += left;
+    *amount_read = left;
+
+    return GGE_SUCCESS;
 }
 
 gg_error gg_lambda_handler_write_response(const void *response,
                                           size_t response_size) {
     (void)response;
     (void)response_size;
-    print_loaded_stub_error();
-    return GGE_RESERVED_MAX;
+
+    gg_log(GG_LOG_INFO, "response: '%s'\n", (char*)response);
+
+    return GGE_SUCCESS;
 }
 
 gg_error gg_lambda_handler_write_error(const char *error_message) {
     (void)error_message;
-    print_loaded_stub_error();
-    return GGE_RESERVED_MAX;
+    
+    gg_log(GG_LOG_WARN, "write error message: '%s'\n", error_message);
+
+    return GGE_SUCCESS;
 }
 
 /***************************************

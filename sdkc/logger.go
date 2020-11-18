@@ -14,30 +14,30 @@ import (
 	"unsafe"
 )
 
-// GreenGrassLogLevel specifies the verbosity of the log output.
-type GreenGrassLogLevel int
+// LogLevel specifies the verbosity of the log output.
+type LogLevel int
 
 const (
-	// GreenGrassLogLevelReservedNotSet is not used.
-	GreenGrassLogLevelReservedNotSet = 0
-	//GreenGrassLogLevelDebug specifies debug output
-	GreenGrassLogLevelDebug = 1
-	//GreenGrassLogLevelInfo specifies info output
-	GreenGrassLogLevelInfo = 2
-	// GreenGrassLogLevelWarn specifies warn output
-	GreenGrassLogLevelWarn = 3
-	//GreenGrassLogLevelError will error output
-	GreenGrassLogLevelError = 4
-	// GreenGrassLogLevelFatal is fatal. System will exist
-	GreenGrassLogLevelFatal = 5
-	//GreenGrassLogLevelReservedMax is last enum
-	GreenGrassLogLevelReservedMax = 6
-	//GreenGrassLogLevelReservedPad for padding
-	GreenGrassLogLevelReservedPad = 0x7FFFFFFF
+	// LogLevelReservedNotSet is not used.
+	LogLevelReservedNotSet = 0
+	//LogLevelDebug specifies debug output
+	LogLevelDebug = 1
+	//LogLevelInfo specifies info output
+	LogLevelInfo = 2
+	// LogLevelWarn specifies warn output
+	LogLevelWarn = 3
+	//LogLevelError will error output
+	LogLevelError = 4
+	// LogLevelFatal is fatal. System will exist
+	LogLevelFatal = 5
+	//LogLevelReservedMax is last enum
+	LogLevelReservedMax = 6
+	//LogLevelReservedPad for padding
+	LogLevelReservedPad = 0x7FFFFFFF
 )
 
 // Log logs out using a printf format.
-func Log(level GreenGrassLogLevel, format string, args ...interface{}) {
+func Log(level LogLevel, format string, args ...interface{}) {
 
 	f := C.CString(fmt.Sprintf(format, args...))
 	C.logwrapper(C.int(level), f)
