@@ -1,0 +1,9 @@
+build:
+	@cd main && make build; cd ..
+	@cd cdk && npm run build; cd ..
+
+deploy:
+	@cd cdk && npm run deploy; cd ..
+
+clean:
+	@cd main && make clean

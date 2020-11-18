@@ -1,31 +1,22 @@
 import * as cdk from '@aws-cdk/core';
-import * as common from 'dist-common';
-import {ConfigChangeService} from './services/configchange'
-import { IQueueSubscription, IIoTCore } from 'cdk-custom-resources'
+import * as lambda from '@aws-cdk/aws-lambda';
+import path = require("path");
 
-export interface DeviceServiceProperties extends common.Stack.ServiceProperties {
-    /**
-   * The endpoint URL to IoT core. Example https://a3gec3zlwkdb2-ats.iot.eu-central-1.amazonaws.com
-   */
-  iotCore: IIoTCore;
-}
+export class DeviceService extends cdk.Stack {
 
-export class DeviceService extends common.Stack.ServiceConstruct {
-  /**
-   * Subscriptions that should be fed into buildingService for config-change
-   */
-  public readonly buildingSubscriptions: Array<IQueueSubscription>
-
-  constructor(scope: cdk.Construct, id: string, props: DeviceServiceProperties) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const configChange = new ConfigChangeService(this, 'devicesvc/configchange', {
-      deployEnvironment: this.deployEnvironment,
-      logLevel: this.logLevel,
-      trace: this.trace,
-      iotCore: props.iotCore,
+    const testlambda = new lambda.Function(this, 'testlambda', {
+      runtime: lambda.Runtime.GO_1_X,
+      functionName: 'testlambda',
+      handler: 'testlambda',
+      code: lambda.Code.fromAsset(path.join(__dirname, '/../_out/testlambda')),
+      timeout: cdk.Duration.seconds(30),
+      environment: {
+        IS_ENV_ON_GGC_SET: 'yes they are!',
+      }
     });
 
-    this.buildingSubscriptions = [ configChange.buildingServiceSubscription ]
   }
 }
