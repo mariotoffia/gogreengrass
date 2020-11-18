@@ -29,10 +29,6 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 		option,
 		func(lc *LambdaContextSlim) {
 
-			Log(LogLevelInfo, "ClientContext: '%s'\n", lc.ClientContext)
-			Log(LogLevelInfo, "FunctionARN: '%s'\n", lc.FunctionARN)
-			Log(LogLevelInfo, "Payload: '%s'\n", string(lc.Payload))
-
 			resp, err := invokeJSONRequest(lc)
 
 			if err != nil {
@@ -41,10 +37,7 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 				lambdaWriteError(err.Error())
 
 			} else {
-
-				Log(LogLevelInfo, "Write response: %s\n", string(resp))
 				lambdaWriteResponse(resp)
-
 			}
 
 		}, true /*payload*/)
@@ -56,7 +49,7 @@ func invokeJSONRequest(lc *LambdaContextSlim) ([]byte, error) {
 	req, err := createRequest(lc)
 
 	if err != nil {
-		fmt.Printf("%s", err.Error())
+		return nil, err
 	}
 
 	var resp messages.InvokeResponse
