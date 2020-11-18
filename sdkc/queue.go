@@ -17,9 +17,8 @@ const (
 	// QueueFullPolicyOptionBestEffort sets publishing at best effort.
 	QueueFullPolicyOptionBestEffort = 0
 	// QueueFullPolicyOptionAllOrError specifies that GGC will either deliver
-	// messages to all targets and return request
-	// status GG_REQUEST_SUCCESS or deliver to no targets and return a
-	//request status GG_REQUEST_AGAIN **/
+	// messages to all targets and return request status GG_REQUEST_SUCCESS or
+	// deliver to no targets and return a request status GG_REQUEST_AGAIN
 	QueueFullPolicyOptionAllOrError = 1
 	// QueueFullPolicyOptionReservedMax max in enum
 	QueueFullPolicyOptionReservedMax = 2
