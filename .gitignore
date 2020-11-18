@@ -16,7 +16,8 @@ main.h
 gogreengrass
 glue.go
 glue.py
-greengrasssdk*
+*.so
+*.o
 
 ## Python temp stuff
 __pycache__

@@ -2,8 +2,10 @@
     "cSpell.words": [
         "CFUNCTYPE",
         "CMPFUNC",
+        "LDFLAGS",
         "Nanos",
         "Printf",
+        "Thandler",
         "buildmode",
         "cdll",
         "ctypes",
@@ -14,9 +16,11 @@
         "greengrasssdk",
         "initcb",
         "lambdacontext",
+        "llibaws",
         "mariotoffia",
         "myfunc",
         "publishcb",
+        "sdkc",
         "sdkpath",
         "struct"
     ]
