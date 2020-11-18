@@ -57,12 +57,22 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 		option,
 		func(lc *LambdaContextSlim) {
 
+			Log(LogLevelInfo, "ClientContext: '%s'\n", lc.ClientContext)
+			Log(LogLevelInfo, "FunctionARN: '%s'\n", lc.FunctionARN)
+			Log(LogLevelInfo, "Payload: '%s'\n", string(lc.Payload))
+
 			resp, err := invokeJSONRequest(lc.ClientContext, lc.Payload)
 
 			if err != nil {
+
+				Log(LogLevelError, "Got error: %s\n", err.Error())
 				lambdaWriteError(err.Error())
+
 			} else {
+
+				Log(LogLevelInfo, "Write response: %s\n", string(resp))
 				lambdaWriteResponse(resp)
+
 			}
 
 		}, true /*payload*/)

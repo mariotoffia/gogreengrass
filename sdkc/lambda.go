@@ -19,6 +19,7 @@ import (
 // TODO: remove these links when done
 // https://github.com/aws/aws-greengrass-core-sdk-c/tree/master/aws-greengrass-core-sdk-c-example
 // https://golang.org/cmd/cgo/
+// https://docs.aws.amazon.com/greengrass/latest/developerguide/lambda-functions.html#lambda-executables
 
 // LambdaContextSlim slim version of the lambda context
 //
@@ -90,7 +91,7 @@ func lambdaWriteResponse(payload []byte) error {
 	errorCode := GreenGrassCode(
 		C.gg_lambda_handler_write_response(
 			unsafe.Pointer(&payload[0]),
-			C.size_t(10),
+			C.size_t(len(payload)),
 		),
 	)
 
