@@ -2,8 +2,10 @@ package main
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"bytes"
 	"compress/gzip"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -56,6 +58,10 @@ func runner(args args) {
 
 	writeFile(args.Out, "glue.go", goFile)
 	writeFile(args.Out, "glue.py", pyFile)
+
+	if err := writeSoFile(); nil != err {
+		fmt.Printf("Failed to write the /tmp/gogreengrass/libaws-greengrass-core-sdk-c.so, error: %s\n", err.Error())
+	}
 
 	if args.DownloadSDK {
 		downloadGreengrassSDK(args.Out, args.Force)
@@ -197,5 +203,40 @@ func downloadFile(URL, fileName string) error {
 		return err
 	}
 
+	return nil
+}
+
+func writeSoFile() error {
+
+	data, err := base64.StdEncoding.DecodeString(string(soFile))
+	if err != nil {
+		return err
+	}
+
+	reader, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return err
+	}
+
+	f := reader.File[0]
+	r, err := f.Open()
+	if err != nil {
+		return err
+	}
+
+	defer r.Close()
+
+	os.Mkdir("/tmp/gogreengrass", os.ModePerm)
+	dst, err := os.Create("/tmp/gogreengrass/libaws-greengrass-core-sdk-c.so")
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		dst.Sync()
+		dst.Close()
+	}()
+
+	io.Copy(dst, r)
 	return nil
 }
