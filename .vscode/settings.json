@@ -22,6 +22,7 @@
         "publishcb",
         "sdkc",
         "sdkpath",
-        "struct"
+        "struct",
+        "testlambda"
     ]
 }
