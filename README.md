@@ -204,6 +204,8 @@ The slim lambda is a non reflective and no `Unmarshal` path and hence is more op
 
 As with standard lambda, one may register using `GGStartWithOpts` to change if background thread or read / write data yourself.
 
+To write a response, do create a `NewResponseWriter` and do a `Write(buff)`. If any errors is returned, use the `NewErrorResponseWriter` and do a `Write(buff)`. Both of them implements the `io.Writer` interface.
+
 ### Install C Runtime SDK Mock Library 
 
 You need to have the mock version of the shared library. Either follow the instructions in the [greengrass core C SDK](https://github.com/aws/aws-greengrass-core-sdk-c) or use the `gogreengrass` ability to store _libaws-greengrass-core-sdk-c.so_ in your _/tmp/gogreengrass_ folder. 
