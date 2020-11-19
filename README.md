@@ -79,7 +79,7 @@ When doing `npm run deploy` it will show up in the IoT Core Greengrass console l
 
 ## Command Line Tool
 Install the command line tool by `go get -u github.com/mariotoffia/gogreengrass`. This tool may be used in order to generate
-the necessary go and python shim. For example (_see internal/example/lambda/main_):
+the necessary go and python shim or to install the mock shared library if using C runtime.
 
 ```gogreengrass -h``` emits the following:
 
@@ -103,7 +103,7 @@ Options:
 
 ## C Runtime
 
-This is the proffered method to create your go lambdas. Use the _sdkc_ package to interact with the lambda runtime and greengrass specific APIs such as local device shadow / secrets manager or publish data on _MQTT_ etc.
+This is the preferred method to create your go lambdas. Use the _sdkc_ package to interact with the lambda runtime and greengrass specific APIs such as local device shadow / secrets manager or publish data on _MQTT_ etc.
 
 ### Lambda
 
