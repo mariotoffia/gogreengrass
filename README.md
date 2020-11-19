@@ -186,7 +186,7 @@ The slim lambda is a non reflective and no `Unmarshal` path and hence is more op
 ```
 <1> The one and only function type to register.
 <2> ClientContext is a string that you may unmarshal yourself.
-<3> The payload is a `[]byte` (in this case it will be populated)
+<3> The payload is a `[]byte` (in this case it will be populated since `GGStart` do set _payload_ to `true`)
 <4> If you want to return data, you have to write either error output or return payload yourself.
 
 As with standard lambda, one may register using `GGStartWithOpts` to change if background thread or read / write data yourself.
