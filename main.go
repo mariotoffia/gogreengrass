@@ -29,6 +29,7 @@ type args struct {
 	SDKC        bool   `help:"Installs the c runtime shared library in /tmp/gogreengrass"`
 }
 
+// Version will output the current version and quit.
 func (args) Version() string {
 	return "gogreengrass v0.0.5"
 }
