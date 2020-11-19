@@ -15,17 +15,17 @@ import (
 // green grass secrets manager.
 type Secret struct {
 	// ARN is the ARN of the secret.
-	ARN string `json:"arn"`
+	ARN string
 	// Name is the friendly name of the secret.
-	Name string `json:"name"`
+	Name string
 	// VersionID is the unique identifier of this version of the secret.
-	VersionID string `json:"version"`
+	VersionID string `json:"VersionId"`
 	// SecretBinary is the decrypted part of the protected secret information that was originally provided as
 	// binary data in the form of a byte array. This parameter is not used if the secret is created by the Secrets Manager console.
 	//
 	// If you store custom information in this field of the secret, then you must code your Lambda rotation function to parse and
 	// interpret whatever you store in the _SecretString_ or _SecretBinary_ fields.
-	SecretBinary []byte `json:"bin"`
+	SecretBinary []byte
 	// SecretString is the decrypted part of the protected secret information that was originally provided as a string.
 	//
 	// If you create this secret by using the Secrets Manager console then only the ``SecretString``
@@ -36,11 +36,11 @@ type Secret struct {
 	// PutSecretValue API operations instead of the Secrets Manager console, or by using the
 	// *Other secret type* in the console, then you must code your Lambda rotation function to
 	// parse and interpret those values.
-	SecretString string `json:"secret"`
+	SecretString string
 	// VersionStages is a list of all of the staging labels currently attached to this version of the secret.
-	Stages []string `json:"stages"`
+	VersionStages []string
 	// Creates is the date and time that this version of the secret was created.
-	Created time.Time `json:"created"`
+	CreatedDate *time.Time
 }
 
 // SecretsManager is a interface to interact with the
