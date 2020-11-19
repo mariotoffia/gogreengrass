@@ -8,6 +8,8 @@ import (
 	"github.com/mariotoffia/gogreengrass/sdkc"
 )
 
+//go:generate gogreengrass -sdkc
+
 func main() {
 	sdkc.Log(sdkc.LogLevelInfo, "Register lambda...\n")
 

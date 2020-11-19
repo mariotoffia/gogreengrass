@@ -24,6 +24,9 @@ Both may use e.g. _CDK_ to deploy the lambda.
 For example, create this simple lambda that you want to execute in same thread as the `main` function.
 
 ```golang
+
+//go:generate gogreengrass -sdkc
+
 func main() {
 	type MyEvent struct {
 		Data  int    `json:"data"`
@@ -55,7 +58,7 @@ func main() {
 }
 ```
 
-Make sure to have the shared library shim installed by `gogreengrass -sdkc` - _see Command Line Tool_. Just do a standard _go_ build `go build -o testlambda main.go` and include it into your deployment. 
+Make sure to have the shared library shim installed by `gogreengrass -sdkc` - _see Command Line Tool_. Since this file is decorated with generator pattern, `go generate` will create the library shim. Just do a standard _go_ build `go build -o testlambda main.go` and include it into your deployment. 
 
 The following _CDK_ definition can be used to deploy the above lambda (_see sample: internal/test/sdkc/lambda_).
 

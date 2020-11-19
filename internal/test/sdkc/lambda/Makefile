@@ -1,5 +1,8 @@
+generate:
+	@cd main && make generate && cd ..
+
 build:
-	@cd main && make build; cd ..
+	@cd main && make build & cd ..
 	@cd cdk && npm run build && cd ..
 
 deploy:

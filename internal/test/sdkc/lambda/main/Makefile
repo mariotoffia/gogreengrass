@@ -1,3 +1,6 @@
+generate:
+	@go generate
+	
 build:
 	@mkdir -p ../_out/testlambda
 	@go build -o ../_out/testlambda/testlambda main.go
