@@ -24,11 +24,13 @@ type args struct {
 	Package     string `arg:"-p" help:"an optional package name instead of main" placeholder:"PACKAGE"`
 	Binary      string `arg:"-b" help:"an optional name of the binary that the build system produces, default is foldername.o"`
 	DownloadSDK bool   `arg:"-d" help:"If set to true, it will download the python sdk (it is needed to be in current folder)"`
-	Force       bool   `arg:"-f" help:"Force downloads the SDK (even if exists in target folder)`
+	Force       bool   `arg:"-f" help:"Force downloads the SDK (even if exists in target folder)"`
+	SDKP        bool   `help:"Writes the python/go shims to current folder (or out folder)"`
+	SDKC        bool   `help:"Installs the c runtime shared library in /tmp/gogreengrass"`
 }
 
 func (args) Version() string {
-	return "gogreengrass v0.0.3"
+	return "gogreengrass v0.0.5"
 }
 
 func main() {
@@ -56,11 +58,15 @@ func runner(args args) {
 
 	pyFile = bytes.Replace(gluePy, []byte("./main.so"), []byte("./"+args.Binary+".so"), 1)
 
-	writeFile(args.Out, "glue.go", goFile)
-	writeFile(args.Out, "glue.py", pyFile)
+	if args.SDKP {
+		writeFile(args.Out, "glue.go", goFile)
+		writeFile(args.Out, "glue.py", pyFile)
+	}
 
-	if err := writeSoFile(); nil != err {
-		fmt.Printf("Failed to write the /tmp/gogreengrass/libaws-greengrass-core-sdk-c.so, error: %s\n", err.Error())
+	if args.SDKC {
+		if err := writeSoFile(); nil != err {
+			fmt.Printf("Failed to write the /tmp/gogreengrass/libaws-greengrass-core-sdk-c.so, error: %s\n", err.Error())
+		}
 	}
 
 	if args.DownloadSDK {

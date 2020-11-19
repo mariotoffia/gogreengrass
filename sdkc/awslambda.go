@@ -29,7 +29,7 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 		option,
 		func(lc *LambdaContextSlim) {
 
-			resp, err := invokeJSONRequest(lc)
+			resp, err := invoke(lc)
 
 			if err != nil {
 
@@ -44,29 +44,9 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 
 }
 
-func invokeJSONRequest(lc *LambdaContextSlim) ([]byte, error) {
+func invoke(lc *LambdaContextSlim) ([]byte, error) {
 
-	req, err := createRequest(lc)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var resp messages.InvokeResponse
-	if err := function.Invoke(req, &resp); err != nil {
-		return nil, fmt.Errorf("Invoke error: %s", err.Error())
-	}
-
-	if resp.Error != nil {
-		return nil, fmt.Errorf("%s", err.Error())
-	}
-
-	return resp.Payload, nil
-}
-
-func createRequest(lc *LambdaContextSlim) (*messages.InvokeRequest, error) {
-
-	res := &messages.InvokeRequest{
+	req := &messages.InvokeRequest{
 		InvokedFunctionArn: lc.FunctionARN,
 		XAmznTraceId:       "",
 		RequestId:          "",
@@ -78,8 +58,17 @@ func createRequest(lc *LambdaContextSlim) (*messages.InvokeRequest, error) {
 	}
 
 	if lc.ClientContext != "" {
-		res.ClientContext = []byte((lc.ClientContext))
+		req.ClientContext = []byte((lc.ClientContext))
 	}
 
-	return res, nil
+	var resp messages.InvokeResponse
+	if err := function.Invoke(req, &resp); err != nil {
+		return nil, fmt.Errorf("Invoke error: %s", err.Error())
+	}
+
+	if resp.Error != nil {
+		return nil, fmt.Errorf("%s", resp.Error.Error())
+	}
+
+	return resp.Payload, nil
 }
