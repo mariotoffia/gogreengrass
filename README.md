@@ -10,6 +10,7 @@ This library is a enabler to deploy standard aws go lambdas onto greengrass devi
 
 It also enables a go programmer to create much more efficient greengrass specific lambdas using the simplified lambda model if that is required.
 
+**NOTE: This is still very much in development!**
 
 ## Modes of operation
 This library has two modes of operation to deploy and execute the _go lambdas_. 
