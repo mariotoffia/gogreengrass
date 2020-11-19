@@ -32,7 +32,7 @@ func main() {
 
 		resp := MyResponse{Age: 19, Topic: "feed/myfunc"}
 
-		sdkc.NewQueue().PublishObject(
+		sdkc.NewQueueAPI().PublishObject(
 			"feed/testlambda", sdkc.QueueFullPolicyOptionAllOrError, &resp,
 		)
 

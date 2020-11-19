@@ -26,18 +26,18 @@ const (
 	QueueFullPolicyOptionReservedPad = 0x7FFFFFFF
 )
 
-// Queue handles publishing to MQTT through the local API
-type Queue struct {
+// QueueAPI handles publishing to MQTT through the local API
+type QueueAPI struct {
 	APIRequest
 }
 
-// NewQueue creates a new MQTT client
-func NewQueue() *Queue {
-	return &Queue{}
+// NewQueueAPI creates a new MQTT client
+func NewQueueAPI() *QueueAPI {
+	return &QueueAPI{}
 }
 
 // Publish will publish a payload on provided topic.
-func (q *Queue) Publish(topic string, option QueueFullPolicyOption, payload []byte) {
+func (q *QueueAPI) Publish(topic string, option QueueFullPolicyOption, payload []byte) {
 
 	if q.err != nil {
 		return
@@ -91,10 +91,10 @@ func (q *Queue) Publish(topic string, option QueueFullPolicyOption, payload []by
 
 // PublishObject will publish the object, marshalled as
 // _JSON_, onto specified topic.
-func (q *Queue) PublishObject(
+func (q *QueueAPI) PublishObject(
 	topic string,
 	policy QueueFullPolicyOption,
-	object interface{}) *Queue {
+	object interface{}) *QueueAPI {
 
 	if nil == object {
 		return q
