@@ -204,7 +204,7 @@ func downloadFile(URL, fileName string) error {
 	}
 	defer file.Close()
 
-	//Write the bytes to the fiel
+	//Write the bytes to the file
 	_, err = io.Copy(file, response.Body)
 	if err != nil {
 		return err

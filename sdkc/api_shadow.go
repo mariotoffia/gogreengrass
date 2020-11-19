@@ -9,8 +9,6 @@ import (
 	"unsafe"
 )
 
-// https://github.com/aws/aws-greengrass-core-sdk-c/tree/master/aws-greengrass-core-sdk-c-example
-
 // ShadowAPI encapsulates communication with the device shadow API.
 type ShadowAPI struct {
 	APIRequest
