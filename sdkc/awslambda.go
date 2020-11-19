@@ -14,14 +14,18 @@ var function *lambda.Function
 //
 // This will start the dispatcher on same thread and will freeze
 func Start(handler interface{}) {
-	StartWithOpts(RuntimeOptionSingleThread, handler)
+	StartWithOpts(RuntimeOptionSingleThread, handler, true /*payload*/)
 }
 
 // StartWithOpts starts the lambda runtime with the specified option and registers the lambda callback.
 //
+// If payload is set to false, the data sent to the lambda may be retrievable by `NewRequestReader()`.
+// This is good for lambdas that do not want any payload or if the payload is large and it is possible
+// to process this in parts. Hence, memory requirements is much lower.
+//
 // Documentation on lambda function layout:
 // https://github.com/aws/aws-lambda-go/blob/f24acb29a08c3a45eb95e6cd4ae56fbfabf4f4a5/lambda/entry.go#L39
-func StartWithOpts(option RuntimeOption, handler interface{}) {
+func StartWithOpts(option RuntimeOption, handler interface{}, payload bool) {
 
 	function = lambda.NewFunction(lambda.NewHandler(handler))
 
@@ -40,7 +44,9 @@ func StartWithOpts(option RuntimeOption, handler interface{}) {
 				lambdaWriteResponse(resp)
 			}
 
-		}, true /*payload*/)
+		},
+		payload,
+	)
 
 }
 

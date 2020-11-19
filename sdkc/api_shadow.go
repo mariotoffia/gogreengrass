@@ -68,8 +68,8 @@ func (sa *ShadowAPI) Get(thingName string) *ShadowAPI {
 	tn := C.CString(thingName)
 
 	defer func() {
+		sa.close()
 		C.free(unsafe.Pointer(tn))
-		sa.APIRequest.close()
 	}()
 
 	res := C.gg_request_result{}

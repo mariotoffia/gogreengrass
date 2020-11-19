@@ -105,6 +105,92 @@ Options:
 
 This is the proffered method to create your go lambdas. Use the _sdkc_ package to interact with the lambda runtime and greengrass specific APIs such as local device shadow / secrets manager or publish data on _MQTT_ etc.
 
+### Lambda
+
+The go version of the lambda runtime is layered. The "slim" or simple layer and the standard AWS lambda layer. Depending on the
+use-case and performance on the device you may choose one over the other. 
+
+
+#### Standard Lambda
+
+The standard AWS lambda layer is behaving exactly the same as a standard cloud lambda, hence portable. 
+
+When using the convenience function  `Start` it starts the lambda dispatcher on the main thread and the lambda gets invoked on the main thread. This is more or less the standard cloud version of it.
+
+```go
+	sdkc.Start(func(c context.Context, data MyEvent) (MyResponse, error) {
+		// process the data here
+	})
+```
+
+If you want to continue on main thread and fire up a dispatcher on a separate thread, you may use `StartWithOpts` to control this behavior. 
+
+```go
+	sdkc.StartWithOpts(
+		func(c context.Context, data MyEvent) (MyResponse, error) { // <1>
+		// process the data here
+		}, 
+		RuntimeOptionSeparateThread, // <2>
+		true  // <3>
+	)
+```
+<1> This function is executed on a single background thread. Hence, the invocations is serialized on that thread. The main thread continues.
+<2> The specifies the separate thread behavior.
+<3> If set to `true`, it will always fetch the payload. If `false` it is up to the lambda to fetch the data (_see below_).
+
+Since the lambda function do take `MyEvent` the payload = `true` must be set to `Unmarshal` into that object. If lambda wants no payload or want to handle this itself, specify `false`.
+
+```go
+// registered lambda
+func(c context.Context) error {
+	r := NewRequestReader()
+	b := make([]byte, 256)
+	for {
+		n, err := 	r.Read(b)
+		if n > 0 {
+			// process the b[:n]
+		}
+
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+}
+```
+
+If you only want to read it all directly, e.g. want to do custom `Unmarshal` or other.
+
+```go
+if buf, err := ioutil.ReadAll(NewRequestReader()); err == nil {
+   // the complete request payload is in buf
+}
+```
+
+In short, you may use standard portable go lambdas or very specialized on the "standard" track. You may even do more lightweight lambdas using the more low level lambda.
+
+#### Slim Lambda
+
+The slim lambda is a non reflective and no `Unmarshal` path and hence is more optimized. You have two options to register the lambda (as with regular lambda). The `GGStart` and `GGStartWithOpts`, it works exactly the same on registration part, except that the lambda function is fixed. You have to do all reading, writing and others yourself.
+
+```go
+	sdkc.GGStart(func(lc *sdkc.LambdaContextSlim) { // <1>
+
+		sdk.Log(sdkc.LogLevelInfo, "%s, %s\n", lc.ClientContext, lc.FunctionARN) // <2>
+		sdk.Log(sdkc.LogLevelInfo, "Payload: %s\n", string(lc.Payload)) // <3>
+       // <4>
+	})
+```
+<1> The one and only function type to register.
+<2> ClientContext is a string that you may unmarshal yourself.
+<3> The payload is a `[]byte` (in this case it will be populated)
+<4> If you want to return data, you have to write either error output or return payload yourself.
+
+As with standard lambda, one may register using `GGStartWithOpts` to change if background thread or read / write data yourself.
+
 ### Install C Runtime SDK Mock Library 
 
 You need to have the mock version of the shared library. Either follow the instructions in the [greengrass core C SDK](https://github.com/aws/aws-greengrass-core-sdk-c) or use the `gogreengrass` ability to store _libaws-greengrass-core-sdk-c.so_ in your _/tmp/gogreengrass_ folder. 

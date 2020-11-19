@@ -105,6 +105,7 @@ func (s *SecretAPI) GetSecret(secretID, versionID, versionStage string) (*Secret
 	ct := C.CString(versionStage)
 
 	defer func() {
+		s.close()
 		C.free(unsafe.Pointer(cs))
 		C.free(unsafe.Pointer(cv))
 		C.free(unsafe.Pointer(ct))
