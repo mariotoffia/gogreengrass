@@ -1,5 +1,13 @@
-# gogreengrass
+# Overview of gogreengrass 
 
+:bulb: **Deploy your cloud go lambda onto greengrass core devices without alteration**
+
+This library is a enabler to deploy standard aws go lambdas onto greengrass device lambdas. It also exposes the greengrass local API functions (greengrass SDK) to e.g. communicate with MQTT, local device shadow / secrets manager etc.
+
+It also enables a go programmer to create much more efficient greengrass specific lambdas using the simplified lambda model if that is required.
+
+
+## Modes of operation
 This library has two modes of operation to deploy and execute the _go lambdas_. 
 
 1. Primary mode is to use GGC C Runtime and deploy golang lambdas as **greengrass lambda executable**. In this mode the go lambda is dynamically linked to the GGC C runtime and is much more optimal.
