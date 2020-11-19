@@ -138,7 +138,7 @@ If you want to continue on main thread and fire up a dispatcher on a separate th
 <2> The specifies the separate thread behavior.
 <3> If set to `true`, it will always fetch the payload. If `false` it is up to the lambda to fetch the data (_see below_).
 
-Since the lambda function do take `MyEvent` the payload = `true` must be set to `Unmarshal` into that object. If lambda wants no payload or want to handle this itself, specify `false`.
+Since the lambda function do take `MyEvent` the payload must be set to `true` in order to `Unmarshal` into that object. If lambda wants no payload or want to handle this itself, specify `false`.
 
 ```go
 // registered lambda
