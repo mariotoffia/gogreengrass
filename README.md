@@ -1,6 +1,5 @@
 [![GoDoc](https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://pkg.go.dev/mod/github.com/mariotoffia/gogreengrass)
 [![GitHub Actions](https://img.shields.io/github/workflow/status/mariotoffia/gogreengrass/Go?style=flat-square)](https://github.com/mariotoffia/gogreengrass/actions?query=workflow%3AGo)
-![CodeQL](https://github.com/mariotoffia/gogreengrass/workflows/CodeQL/badge.svg)
 
 # Overview of gogreengrass 
 
