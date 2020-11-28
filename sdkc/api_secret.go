@@ -1,5 +1,7 @@
 package sdkc
 
+// TODO: https://github.com/aws-samples/aws-greengrass-lambda-functions
+
 /*
 #include "lib/greengrasssdk.h"
 */

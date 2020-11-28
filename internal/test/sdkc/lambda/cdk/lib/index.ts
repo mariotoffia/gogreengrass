@@ -16,9 +16,6 @@ export class TestLambda extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       currentVersionOptions: {
         removalPolicy: cdk.RemovalPolicy.RETAIN,
-      },
-      environment: {
-        IS_ENV_ON_GGC_SET: 'yes they are!',
       }
     });
 
