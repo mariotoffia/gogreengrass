@@ -18,28 +18,7 @@ func main() {
 		return
 	}
 
-	content, err := ioutil.ReadFile("./internal/files/glue.go")
-	if err != nil {
-		fmt.Println("Failed to read glue.go file:", err.Error())
-		return
-	}
-
-	gen.Write([]byte("package main\n\n"))
-	gen.Write([]byte("var glueGo = []byte(`"))
-	gen.Write(content)
-	gen.Write([]byte("`)\n\n"))
-
-	content, err = ioutil.ReadFile("./internal/files/glue.py")
-	if err != nil {
-		fmt.Println("Failed to read glue.py file:", err.Error())
-		return
-	}
-
-	gen.Write([]byte("var gluePy = []byte(`"))
-	gen.Write(content)
-	gen.Write([]byte("`)\n\n"))
-
-	content, err = ioutil.ReadFile("/tmp/gogreengrass/libaws-greengrass-core-sdk-c.so")
+	content, err := ioutil.ReadFile("/tmp/gogreengrass/libaws-greengrass-core-sdk-c.so")
 	if err != nil {
 		fmt.Println("failed to read /tmp/gogreengrass/libaws-greengrass-core-sdk-c.so: ", err.Error())
 		return
@@ -68,6 +47,7 @@ func main() {
 
 	content = []byte(base64.StdEncoding.EncodeToString(buf.Bytes()))
 
+	gen.Write([]byte("package main\n\n"))
 	gen.Write([]byte("var soFile = []byte(`"))
 	gen.Write(content)
 	gen.Write([]byte("`)\n\n"))

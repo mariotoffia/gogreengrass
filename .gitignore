@@ -13,12 +13,5 @@ _out/
 
 ## Generated from go generate / build
 main.h
-gogreengrass
-glue.go
-glue.py
 *.so
 *.o
-
-## Python temp stuff
-__pycache__
-*~
