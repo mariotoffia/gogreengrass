@@ -21,7 +21,7 @@ For example, create this simple lambda that you want to execute in same thread a
 
 ```golang
 
-//go:generate gogreengrass -sdkc
+//go:generate gogreengrass --sdkc
 
 func main() {
 	type MyEvent struct {
